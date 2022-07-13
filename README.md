@@ -44,11 +44,15 @@
     echo /etc/nginx >> /etc/modplura
     touch /etc/.modplura
 
-### 4. Check logging
+### 4. Check logging for Nginx
 
     ls -al /var/log/plura/
     
+    tail -f /var/log/plura/weglog.log
     
+    
+
+
 ### Reference
 
 #### 1) https://docs.docker.com/config/containers/logging/configure/
