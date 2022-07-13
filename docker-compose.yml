@@ -1,0 +1,52 @@
+### docker-compose.yml
+
+version: "3.3"
+services:
+        db:
+                #
+                container_name: wpdb
+                #
+                image: mysql
+                restart: always
+                environment:
+                        MYSQL_DATABASE: wordpress
+                        MYSQL_USER: root
+                        MYSQL_PASSWORD: 1q2w3e4r
+                        MYSQL_ROOT_PASSWORD: 1q2w3e4r
+                #
+                volumes:
+                        - ./mysql/data:/var/lib/mysql:rw
+                #
+                ports:
+                        - "3306:3306"
+        app:
+                container_name: php
+                image: php:fpm
+                # db
+                depends_on:
+                        - db
+                ports:
+                        - "9000:9000"
+                volumes:
+                        - ./nginx/html:/var/www/html
+                environment:
+                        PMA_HOST: db
+                        PMA_USERE: root
+                        PMA_PASSWORD: 1q2w3e4r
+        web:
+                container_name: nginx
+                #
+                build:
+                        context: ./nginx
+                        dockerfile: dockerfile
+                depends_on:
+                        - app
+                volumes:
+                        - ./nginx/html:/var/www/html
+                        - ./nginx/conf.d/default.conf
+                ports:
+                        - "80:80"
+                        - "443:443"
+                links:
+                        - app
+                restart: always
