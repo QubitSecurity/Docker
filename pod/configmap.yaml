@@ -1,0 +1,73 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    events {
+    }
+    http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+
+      # Change for PLURA log format
+
+      log_format mod_plura '{'
+      '"Remote-addr": "$remote_addr",'
+      '"X-forwarded-for": "$http_x_forwarded_for",'
+      '"Host": "$host",'
+      '"Request-date": "$time_local",'
+      '"Request-msec": "$msec",'
+      #'"Count-Connection": "$connection",'
+      '"Request": "$request",'
+      '"Method": "$request_method",'
+      '"Uri": "$uri",'
+      '"Referer": "$http_referer",'
+      '"User-Agent": "$http_user_agent",'
+      '"Cookie": "$http_cookie",'
+      '"Req-Content-Type": "$content_type",'
+      '"Req-Content-Length": "$content_length",'
+      '"Post-body": "$request_body",'
+      '"Status": "$status",'
+      '"Cache-Control": "$sent_http_cache_control",'
+      #'"Connection": "$sent_http_connection",'
+      '"Transfer-Encoding": "$sent_http_transfer_encoding",'
+      '"Resp-Content-Type": "$sent_http_content_type",'
+      #'"Resp-Content-Length": "$sent_http_content_length",'
+      '"Resp-Content-Length": "$body_bytes_sent",'
+      '"ModPlura-version": "Nginx/5.5.0($nginx_version)"'
+      '}';
+
+      ### for local nginx
+      ### access_log /var/log/plura/weblog.log mod_plura;
+
+      ### for docker nginx
+      access_log /var/log/nginx/access.log mod_plura;
+
+      sendfile        on;
+      #tcp_nopush     on;
+
+      keepalive_timeout  65;
+
+      #gzip  on;
+
+      include /etc/nginx/conf.d/*.conf;
+      
+      server {
+        listen 80 default_server;
+        root /var/www/html;
+        index index.html index.htm index.php;
+
+        server_name localhost;
+
+        location ~ \.php$ {
+          try_files $uri =404;
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass php:9000; 
+          fastcgi_index index.php;
+          include fastcgi_params;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+      }
+    }
