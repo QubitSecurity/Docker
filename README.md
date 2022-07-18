@@ -1,6 +1,6 @@
 # Docker
 
-### nginx docker container to host syslog
+### nginx docker container to host syslog using logging drivers
 
 ### 1. Create docker-compose.yml
 
