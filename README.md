@@ -30,11 +30,11 @@
 
 #### 2-3. Check
 
-    docker exec -it <> /bin/bash
+    docker exec -it <IP_Addr> /bin/bash
     
     docker logs nginx
     
-    docker restart <>
+    docker restart <IP_Addr>
 
 ### 3. Install PLURA-agent
 
